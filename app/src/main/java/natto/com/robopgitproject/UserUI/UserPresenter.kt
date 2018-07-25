@@ -17,6 +17,8 @@ class UserPresenter(userView: UserContract.View) : UserContract.Presenter {
 
     private var mHandler: LoadHandler? = null
 
+    private var GIT_API_KEY=""
+
     var userNum=0
 
     var userList:ArrayList<User>?=null
@@ -33,7 +35,7 @@ class UserPresenter(userView: UserContract.View) : UserContract.Presenter {
     }
 
     override fun reloadData() {
-        GitApi().getUsers("t-robop", object: Handler<Json> {
+        GitApi().getUsers(this.GIT_API_KEY,"t-robop", object: Handler<Json> {
             override fun success(request: Request, response: Response, value: Json) {
                 try {
                     val idList=GitApi().getLoginIdList(value)
@@ -43,7 +45,7 @@ class UserPresenter(userView: UserContract.View) : UserContract.Presenter {
                         msg.obj = id
                         mHandler?.sendMessage(msg)
                         Thread(Runnable {
-                            GitApi().getUser(id,object: Handler<Json>{
+                            GitApi().getUser(this@UserPresenter.GIT_API_KEY,id,object: Handler<Json>{
                                 override fun success(request: Request, response: Response, uValue: Json) {
                                     userList?.add(GitApi().getUserData(uValue))
                                     val msg = Message.obtain()
@@ -66,6 +68,10 @@ class UserPresenter(userView: UserContract.View) : UserContract.Presenter {
                 mUserView.connectFailure()
             }
         })
+    }
+
+    override fun setApiKey(key: String) {
+        this.GIT_API_KEY=key
     }
 
     internal inner class LoadHandler : android.os.Handler() {

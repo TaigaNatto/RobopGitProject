@@ -38,12 +38,12 @@ class UserFragment : Fragment(), UserContract.View {
         textV = view.findViewById(R.id.text)
         listV=view.findViewById(R.id.list_user)
         mContext=view.context
+        mPresenter.setApiKey(mContext.getString(R.string.GIT_API_SECRET_KEY))
+        mPresenter.reloadData()
     }
 
     override fun setPresenter(presenter: UserContract.Presenter) {
         mPresenter=presenter
-
-        mPresenter.reloadData()
     }
 
     override fun setAdapter(list: ArrayList<User>) {

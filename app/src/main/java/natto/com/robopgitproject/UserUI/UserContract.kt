@@ -17,5 +17,7 @@ interface UserContract {
 
     interface Presenter : BasePresenter {
         fun reloadData()
+
+        fun setApiKey(key:String)
     }
 }

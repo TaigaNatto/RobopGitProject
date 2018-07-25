@@ -1,6 +1,7 @@
 package natto.com.robopgitproject.UseCase
 
 import android.util.Log
+import com.bumptech.glide.load.engine.Resource
 import com.github.kittinunf.fuel.android.core.Json
 import com.github.kittinunf.fuel.android.extension.responseJson
 import com.github.kittinunf.fuel.core.FuelError
@@ -8,21 +9,22 @@ import com.github.kittinunf.fuel.core.Handler
 import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.httpGet
+import natto.com.robopgitproject.R
 import natto.com.robopgitproject.model.User
 import org.json.JSONException
 import org.json.JSONObject
 
 class GitApi() {
 
-    fun getUsers(projectName: String, handler: Handler<Json>) {
+    fun getUsers(key:String,projectName: String, handler: Handler<Json>) {
         val header: HashMap<String, String> = hashMapOf("Accept" to "application/vnd.github.inertia-preview+json")
-        val url = "https://api.github.com/orgs/$projectName/members?access_token=decaf3676319bd11f9d33859091b33b7bda34b78"
+        val url = "https://api.github.com/orgs/$projectName/members?access_token=$key"
 
         url.httpGet().header(header).responseJson(handler)
     }
 
-    fun getUser(loginId: String, handler: Handler<Json>) {
-        val url = "https://api.github.com/users/$loginId?access_token=decaf3676319bd11f9d33859091b33b7bda34b78"
+    fun getUser(key:String,loginId: String, handler: Handler<Json>) {
+        val url = "https://api.github.com/users/$loginId?access_token=$key"
 
         url.httpGet().responseJson(handler)
     }
