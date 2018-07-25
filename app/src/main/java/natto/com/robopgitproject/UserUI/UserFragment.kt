@@ -54,4 +54,12 @@ class UserFragment : Fragment(), UserContract.View {
         textV?.text="通信失敗"
     }
 
+    override fun connectSuccess() {
+        textV?.text="通信成功"
+    }
+
+    override fun connectStatus(status: String) {
+        textV?.text=status
+    }
+
 }

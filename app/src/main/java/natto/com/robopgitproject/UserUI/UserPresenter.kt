@@ -1,5 +1,6 @@
 package natto.com.robopgitproject.UserUI
 
+import android.os.Message
 import natto.com.robopgitproject.UseCase.GitApi
 import android.util.Log
 import com.github.kittinunf.fuel.android.core.Json
@@ -14,10 +15,17 @@ class UserPresenter(userView: UserContract.View) : UserContract.Presenter {
 
     private var mUserView: UserContract.View = userView
 
+    private var mHandler: LoadHandler? = null
+
+    var userNum=0
+
     var userList:ArrayList<User>?=null
 
     init {
         mUserView.setPresenter(this)
+        userList=ArrayList()
+        mHandler=LoadHandler()
+        userNum=0
     }
 
     override fun start() {
@@ -28,8 +36,27 @@ class UserPresenter(userView: UserContract.View) : UserContract.Presenter {
         GitApi().getUsers("t-robop", object: Handler<Json> {
             override fun success(request: Request, response: Response, value: Json) {
                 try {
-                    userList= GitApi().jsonToList(value)
-                    mUserView.setAdapter(userList!!)
+                    val idList=GitApi().getLoginIdList(value)
+                    userNum=idList.size
+                    for(id in idList) {
+                        val msg = Message.obtain()
+                        msg.obj = id
+                        mHandler?.sendMessage(msg)
+                        Thread(Runnable {
+                            GitApi().getUser(id,object: Handler<Json>{
+                                override fun success(request: Request, response: Response, uValue: Json) {
+                                    userList?.add(GitApi().getUserData(uValue))
+                                    val msg = Message.obtain()
+                                    msg.obj = "success"
+                                    mHandler?.sendMessage(msg)
+                                }
+                                override fun failure(request: Request, response: Response, error: FuelError) {
+                                    mUserView.connectFailure()
+                                }
+                            })
+                        }).start()
+                    }
+                    //mUserView.connectSuccess()
                 } catch (e: JSONException) {
                     Log.e("JSON Parser", "Error parsing data " + e.toString())
                 }
@@ -39,5 +66,15 @@ class UserPresenter(userView: UserContract.View) : UserContract.Presenter {
                 mUserView.connectFailure()
             }
         })
+    }
+
+    internal inner class LoadHandler : android.os.Handler() {
+        override fun handleMessage(msg: Message) {
+            val text = msg.obj.toString()
+            mUserView.connectStatus(userList?.size.toString()+"/"+userNum.toString())
+            if(userList?.size==userNum) {
+                mUserView.setAdapter(userList!!)
+            }
+        }
     }
 }
