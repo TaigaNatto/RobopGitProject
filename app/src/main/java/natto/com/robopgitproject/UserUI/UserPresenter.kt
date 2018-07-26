@@ -47,10 +47,23 @@ class UserPresenter(userView: UserContract.View) : UserContract.Presenter {
                         Thread(Runnable {
                             GitApi().getUser(this@UserPresenter.GIT_API_KEY,id,object: Handler<Json>{
                                 override fun success(request: Request, response: Response, uValue: Json) {
-                                    userList?.add(GitApi().getUserData(uValue))
-                                    val msg = Message.obtain()
-                                    msg.obj = "success"
-                                    mHandler?.sendMessage(msg)
+                                    val userData=GitApi().getUserData(uValue)
+                                    GitApi().getProjectCommits(this@UserPresenter.GIT_API_KEY,"t-robop",userData.uId, object: Handler<Json>{
+                                        override fun success(request: Request, response: Response, cValue: Json) {
+                                            userData.uCommitNum=GitApi().getCommitNum(cValue)
+                                            userList?.add(userData)
+                                            val msg = Message.obtain()
+                                            msg.obj = "success"
+                                            mHandler?.sendMessage(msg)
+                                        }
+                                        override fun failure(request: Request, response: Response, error: FuelError) {
+                                            Log.d("COMMIT_TEST","しっぱい:${error.response}")
+                                            userList?.add(userData)
+                                            val msg = Message.obtain()
+                                            msg.obj = "success"
+                                            mHandler?.sendMessage(msg)
+                                        }
+                                    })
                                 }
                                 override fun failure(request: Request, response: Response, error: FuelError) {
                                     mUserView.connectFailure()

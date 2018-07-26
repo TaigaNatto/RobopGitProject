@@ -1,11 +1,13 @@
 package natto.com.robopgitproject.UserUI
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import com.bumptech.glide.Glide
 import natto.com.robopgitproject.model.User
@@ -25,13 +27,24 @@ class UserAdapter(var context: Context, var items: ArrayList<User>) : BaseAdapte
             holder = CustomViewHolder(
                     v?.findViewById(R.id.text_user_name) as TextView,
                     v?.findViewById(R.id.text_user_id) as TextView,
-                    v?.findViewById(R.id.img_user) as ImageView)
+                    v?.findViewById(R.id.img_user) as ImageView,
+                    v?.findViewById(R.id.text_commit_num) as TextView,
+                    v?.findViewById(R.id.container_commit_num) as LinearLayout)
             v?.tag = holder
         }
 
         holder?.let {
             it.nameText.text=items[position].uName
             it.idText.text=items[position].uId
+            val commitNum=items[position].uCommitNum
+            it.commitNumText.text=commitNum.toString()
+            if (commitNum>100){
+                it.commitNumContainer.setBackgroundResource(R.color.colorTop)
+            }else if(commitNum>50){
+                it.commitNumContainer.setBackgroundResource(R.color.colorSecond)
+            }else if(commitNum>30){
+                it.commitNumContainer.setBackgroundResource(R.color.colorThird)
+            }
             Glide.with(v?.context)
                     .load(items[position].uImgUrl)
                     .into(it.avaterImage)
@@ -55,6 +68,8 @@ class UserAdapter(var context: Context, var items: ArrayList<User>) : BaseAdapte
     class CustomViewHolder(
             var nameText: TextView,
             var idText:TextView,
-            var avaterImage:ImageView
+            var avaterImage:ImageView,
+            var commitNumText:TextView,
+            var commitNumContainer:LinearLayout
     )
 }

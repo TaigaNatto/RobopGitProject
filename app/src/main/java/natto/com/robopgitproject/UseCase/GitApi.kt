@@ -29,12 +29,24 @@ class GitApi() {
         url.httpGet().responseJson(handler)
     }
 
+    fun getProjectCommits(key:String,projectName: String,userId:String, handler: Handler<Json>){
+        val header: HashMap<String, String> = hashMapOf("Accept" to "application/vnd.github.cloak-preview")
+        val url = "https://api.github.com/search/commits?q=org:$projectName+committer:$userId&access_token=$key"
+
+        url.httpGet().header(header).responseJson(handler)
+    }
+
     fun getUserData(json: Json): User {
-        val list = ArrayList<User>()
         val user = User()
         val obj = json.obj()
-        user.uName = obj.getString("name")
-        user.uId = obj.getString("login")
+        val uName=obj.getString("name")
+        val uId=obj.getString("login")
+        if (uName != "null") {
+            user.uName = uName
+        }else{
+            user.uName=uId
+        }
+        user.uId = uId
         user.uImgUrl = obj.getString("avatar_url")
         return user
     }
@@ -46,5 +58,10 @@ class GitApi() {
             list.add(obj.getString("login"))
         }
         return list
+    }
+
+    fun getCommitNum(json: Json):Int{
+        val obj = json.obj()
+        return obj.getInt("total_count")
     }
 }
