@@ -20,9 +20,19 @@ class UserAdapter(var context: Context, var items: ArrayList<User>) : BaseAdapte
         var v = convertView
         var holder: CustomViewHolder? = null
 
-        v?.let {
-            holder = it.tag as CustomViewHolder?
-        } ?: run {
+//        if(v!=null) {
+//            holder = v.tag as CustomViewHolder?
+//        } else {
+//            v = inflater.inflate(R.layout.item_user, null)
+//            holder = CustomViewHolder(
+//                    v?.findViewById(R.id.text_user_name) as TextView,
+//                    v?.findViewById(R.id.text_user_id) as TextView,
+//                    v?.findViewById(R.id.img_user) as ImageView,
+//                    v?.findViewById(R.id.text_commit_num) as TextView,
+//                    v?.findViewById(R.id.container_commit_num) as LinearLayout)
+//            v?.tag = holder
+//        }
+
             v = inflater.inflate(R.layout.item_user, null)
             holder = CustomViewHolder(
                     v?.findViewById(R.id.text_user_name) as TextView,
@@ -31,7 +41,6 @@ class UserAdapter(var context: Context, var items: ArrayList<User>) : BaseAdapte
                     v?.findViewById(R.id.text_commit_num) as TextView,
                     v?.findViewById(R.id.container_commit_num) as LinearLayout)
             v?.tag = holder
-        }
 
         holder?.let {
             it.nameText.text=items[position].uName

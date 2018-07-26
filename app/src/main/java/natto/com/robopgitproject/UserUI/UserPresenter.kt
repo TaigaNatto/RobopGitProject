@@ -10,6 +10,7 @@ import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.core.Response
 import natto.com.robopgitproject.model.User
 import org.json.JSONException
+import java.util.*
 
 class UserPresenter(userView: UserContract.View) : UserContract.Presenter {
 
@@ -92,6 +93,7 @@ class UserPresenter(userView: UserContract.View) : UserContract.Presenter {
             val text = msg.obj.toString()
             mUserView.connectStatus(userList?.size.toString()+"/"+userNum.toString())
             if(userList?.size==userNum) {
+                userList?.sortWith(Comparator { p0, p1 -> if (p0!!.uCommitNum < p1!!.uCommitNum) 1 else -1 })
                 mUserView.setAdapter(userList!!)
             }
         }
